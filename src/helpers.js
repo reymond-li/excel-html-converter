@@ -101,13 +101,19 @@ export const generateTableFractionContent = (data) => {
               ${row[1] || ""}
               </td>
               <td class="td-table-align-right">${
-                row[2] ? row[2].toFixed(2) : ""
+                row[2]
+                  ? row[2].toLocaleString("en-US", { minimumFractionDigits: 2 })
+                  : ""
               }</td>
               <td class="td-table-align-right">${
-                row[3] ? row[3].toFixed(2) : ""
+                row[3]
+                  ? row[3].toLocaleString("en-US", { minimumFractionDigits: 2 })
+                  : ""
               }</td>
-              <td class="td-table-align-right"> ${
-                row[4] ? row[4].toFixed(2) : ""
+              <td class="td-table-align-right"> $${
+                row[4]
+                  ? row[4].toLocaleString("en-US", { minimumFractionDigits: 2 })
+                  : ""
               }</td>
           </tr>
         `;
