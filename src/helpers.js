@@ -75,6 +75,15 @@ export const filterData = (data) => {
   return data;
 };
 
+const isValidRow = (row) => {
+  return (
+    row.length > 0 &&
+    row[0] !== "Total" &&
+    row[1] !== "Opening Balance" &&
+    !!(row[2] || row[3])
+  );
+};
+
 /* 
 <tr class="td-table-alt-row">
     <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> Date 1
@@ -89,34 +98,62 @@ export const filterData = (data) => {
 */
 export const generateTableFractionContent = (data) => {
   let result = "";
+  let count = 0;
   data.forEach((row) => {
-    if (row.length > 0 && row[0] !== "Total" && row[1] !== "Opening Balance")
+    if (row[0] === "Total") {
       result += `
-          <tr class="td-table-alt-row">
-              <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> ${
-                row[0] ? ExcelDateToJSDate(row[0]) : ""
-              }
-              </td>
-              <td class="td-copy-align-left" style="word-wrap: break-word;">
-              ${row[1] || ""}
-              </td>
-              <td class="td-table-align-right">${
-                row[2]
-                  ? row[2].toLocaleString("en-US", { minimumFractionDigits: 2 })
-                  : ""
-              }</td>
-              <td class="td-table-align-right">${
-                row[3]
-                  ? row[3].toLocaleString("en-US", { minimumFractionDigits: 2 })
-                  : ""
-              }</td>
-              <td class="td-table-align-right"> $${
-                row[4]
-                  ? row[4].toLocaleString("en-US", { minimumFractionDigits: 2 })
-                  : ""
-              }</td>
-          </tr>
-        `;
+        <tr class="td-table-row-last">
+            <th class="td-table-total-cell td-table-align-right td-copy-sub" colspan="2" scope="row">
+                <b>Total :</b>
+            </th>
+            <td
+                class="td-table-total-cell td-table-align-right td-copy-sub">$debit total ${row[2]
+                  .toFixed(2)
+                  .toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+            <td
+                class="td-table-total-cell td-table-align-right td-copy-sub">$credit total ${row[3]
+                  .toFixed(2)
+                  .toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+            <td
+                class="td-table-total-cell td-table-align-right td-copy-sub">&nbsp;</td>
+        </tr>
+
+          `;
+    } else if (isValidRow(row)) {
+      result += `
+    <tr class="${count % 2 === 0 ? "td-table-alt-row" : ""}">
+        <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> ${
+          row[0] ? ExcelDateToJSDate(row[0]) : ""
+        }
+        </td>
+        <td class="td-copy-align-left" style="word-wrap: break-word;">
+        ${row[1] || ""}
+        </td>
+        <td class="td-table-align-right">${
+          row[2]
+            ? row[2]
+                .toFixed(2)
+                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            : ""
+        }</td>
+        <td class="td-table-align-right">${
+          row[3]
+            ? row[3]
+                .toFixed(2)
+                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            : ""
+        }</td>
+        <td class="td-table-align-right"> $${
+          row[4]
+            ? row[4]
+                .toFixed(2)
+                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            : ""
+        }</td>
+    </tr>
+  `;
+      count += 1;
+    }
   });
   return result;
 };
