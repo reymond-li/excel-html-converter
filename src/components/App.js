@@ -64,11 +64,6 @@ const App = () => {
         <SectionContainer>
           <DataInput handleFile={handleFile} />
         </SectionContainer>
-        <SectionContainer>
-          <DownloadButton disabled={!data.length} onClick={generateHtmlFile}>
-            Download as HTML
-          </DownloadButton>
-        </SectionContainer>
       </DragDropFile>
     </>
   );
