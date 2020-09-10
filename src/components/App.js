@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import XLSX from "xlsx";
 
 import DragDropFile from "./DragDropFile";
@@ -8,20 +8,17 @@ import {
   TitleContainer,
   DescriptionContainer,
   SectionContainer,
-  DownloadButton,
 } from "./shared-components";
 import { filterData, generateTableFractionContent } from "../helpers";
 
 const App = () => {
-  const [data, setData] = useState([]);
-
   const generateHtmlFile = (data, index) => {
     const element = document.createElement("a");
     const file = new Blob([generateTableFractionContent(data)], {
       type: "text/plain",
     });
     element.href = URL.createObjectURL(file);
-    element.download = `GeneratedFile_${index}.html`;
+    element.download = `GeneratedFile_${index}.txt`;
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   };
@@ -40,8 +37,6 @@ const App = () => {
         const ws = wb.Sheets[sheet];
         /* Convert array of arrays */
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        /* Update state */
-        setData(data);
 
         const filteredData = filterData(data);
         generateHtmlFile(filteredData, index);
