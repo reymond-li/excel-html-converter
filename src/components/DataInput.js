@@ -1,5 +1,6 @@
 import React from "react";
 
+import { FormContainer, InputLabel, InputContainer } from "./shared-components";
 import { SheetJSFT } from "../helpers";
 
 const DataInput = (props) => {
@@ -11,18 +12,16 @@ const DataInput = (props) => {
   };
 
   return (
-    <form className="form-inline">
-      <div className="form-group">
-        <label htmlFor="file">Spreadsheet</label>
-        <input
-          type="file"
-          className="form-control"
-          id="file"
-          accept={SheetJSFT}
-          onChange={handleChange}
-        />
-      </div>
-    </form>
+    <FormContainer>
+      <InputLabel htmlFor="file">Spreadsheet</InputLabel>
+      <InputContainer
+        type="file"
+        className="form-control"
+        id="file"
+        accept={SheetJSFT}
+        onChange={handleChange}
+      />
+    </FormContainer>
   );
 };
 

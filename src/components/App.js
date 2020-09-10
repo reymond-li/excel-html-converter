@@ -3,13 +3,28 @@ import XLSX from "xlsx";
 
 import DragDropFile from "./DragDropFile";
 import DataInput from "./DataInput";
-import OutTable from "./OutTable";
 
-import { make_cols } from "../helpers";
+import {
+  TitleContainer,
+  DescriptionContainer,
+  SectionContainer,
+  DownloadButton,
+} from "./shared-components";
+import { filterData, generateTableFractionContent } from "../helpers";
 
 const App = () => {
-  const [data, setDate] = useState([]);
-  const [cols, setCols] = useState([]);
+  const [data, setData] = useState([]);
+
+  const generateHtmlFile = (data, index) => {
+    const element = document.createElement("a");
+    const file = new Blob([generateTableFractionContent(data)], {
+      type: "text/plain",
+    });
+    element.href = URL.createObjectURL(file);
+    element.download = `GeneratedFile_${index}.html`;
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  };
 
   const handleFile = (file) => {
     /* Boilerplate to set up FileReader */
@@ -19,14 +34,18 @@ const App = () => {
       /* Parse data */
       const bstr = e.target.result;
       const wb = XLSX.read(bstr, { type: rABS ? "binary" : "array" });
-      /* Get first worksheet */
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      /* Convert array of arrays */
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      /* Update state */
-      setDate(data);
-      setCols(make_cols(ws["!ref"]));
+
+      wb.SheetNames.forEach((sheet, index) => {
+        /* Get the current worksheet */
+        const ws = wb.Sheets[sheet];
+        /* Convert array of arrays */
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        /* Update state */
+        setData(data);
+
+        const filteredData = filterData(data);
+        generateHtmlFile(filteredData, index);
+      });
     };
     if (rABS) {
       reader.readAsBinaryString(file);
@@ -36,29 +55,22 @@ const App = () => {
   };
 
   return (
-    <DragDropFile handleFile={handleFile}>
-      <div className="row">
-        <div className="col-xs-12">
+    <>
+      <TitleContainer>Excel - HTML Table Fraction Converter</TitleContainer>
+      <DescriptionContainer>
+        Please upload or drag and drop your excel file (in .xlsx format)
+      </DescriptionContainer>
+      <DragDropFile handleFile={handleFile}>
+        <SectionContainer>
           <DataInput handleFile={handleFile} />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-xs-12">
-          <button
-            disabled={!data.length}
-            className="btn btn-success"
-            onClick={() => {}}
-          >
-            Download
-          </button>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-xs-12">
-          <OutTable data={data} cols={cols} />
-        </div>
-      </div>
-    </DragDropFile>
+        </SectionContainer>
+        <SectionContainer>
+          <DownloadButton disabled={!data.length} onClick={generateHtmlFile}>
+            Download as HTML
+          </DownloadButton>
+        </SectionContainer>
+      </DragDropFile>
+    </>
   );
 };
 

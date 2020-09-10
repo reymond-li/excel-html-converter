@@ -36,6 +36,28 @@ export const make_cols = (refstr) => {
   return o;
 };
 
+const ExcelDateToJSDate = (serial) => {
+  var utc_days = Math.floor(serial - 25569);
+  var utc_value = (utc_days + 1) * 86400;
+  var date_info = new Date(utc_value * 1000);
+
+  var fractional_day = serial - Math.floor(serial) + 0.0000001;
+
+  var total_seconds = Math.floor(86400 * fractional_day);
+
+  var seconds = total_seconds % 60;
+
+  total_seconds -= seconds;
+
+  let fullTime = new Date(
+    date_info.getFullYear(),
+    date_info.getMonth(),
+    date_info.getDate()
+  ).toString();
+  let fullTimeArray = fullTime.split(" ").slice(1, 4);
+  return `${fullTimeArray[0]} ${fullTimeArray[1]}, ${fullTimeArray[2]}`;
+};
+
 const removeExtraColumns = (row) => row.slice(0, 5);
 
 export const filterData = (data) => {
@@ -51,4 +73,44 @@ export const filterData = (data) => {
   }
 
   return data;
+};
+
+/* 
+<tr class="td-table-alt-row">
+    <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> Date 1
+    </td>
+    <td class="td-copy-align-left" style="word-wrap: break-word;">
+        Description 1
+    </td>
+    <td class="td-table-align-right">Debits 1</td>
+    <td class="td-table-align-right"></td>
+    <td class="td-table-align-right"> Balance 1 </td>
+</tr> 
+*/
+export const generateTableFractionContent = (data) => {
+  let result = "";
+  data.forEach((row) => {
+    if (row.length > 0 && row[0] !== "Total" && row[1] !== "Opening Balance")
+      result += `
+          <tr class="td-table-alt-row">
+              <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> ${
+                row[0] ? ExcelDateToJSDate(row[0]) : ""
+              }
+              </td>
+              <td class="td-copy-align-left" style="word-wrap: break-word;">
+              ${row[1] || ""}
+              </td>
+              <td class="td-table-align-right">${
+                row[2] ? row[2].toFixed(2) : ""
+              }</td>
+              <td class="td-table-align-right">${
+                row[3] ? row[3].toFixed(2) : ""
+              }</td>
+              <td class="td-table-align-right"> ${
+                row[4] ? row[4].toFixed(2) : ""
+              }</td>
+          </tr>
+        `;
+  });
+  return result;
 };

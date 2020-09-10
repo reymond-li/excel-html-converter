@@ -4,12 +4,10 @@ import { filterData } from "../helpers";
 
 const OutTable = ({ data, cols }) => {
   const columns = data[0] ? data[0].slice(0, 5) : [];
-  console.log(columns);
-  console.log(data);
   const filteredData = filterData(data);
   return (
-    <div className="table-responsive">
-      <table className="table table-striped">
+    <div>
+      <table>
         <thead>
           <tr>
             {columns.map((c) => (

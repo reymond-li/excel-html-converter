@@ -1,4 +1,11 @@
 import React from "react";
+import styled from "styled-components";
+
+const DragDropContainer = styled.div`
+  margin: auto;
+  width: 600px;
+  padding: 20px;
+`;
 
 const DragDropFile = ({ children, handleFile }) => {
   const suppress = (evt) => {
@@ -13,9 +20,13 @@ const DragDropFile = ({ children, handleFile }) => {
   };
 
   return (
-    <div onDrop={onDrop} onDragEnter={suppress} onDragOver={suppress}>
+    <DragDropContainer
+      onDrop={onDrop}
+      onDragEnter={suppress}
+      onDragOver={suppress}
+    >
       {children}
-    </div>
+    </DragDropContainer>
   );
 };
 
