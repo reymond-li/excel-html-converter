@@ -37,6 +37,9 @@ export const make_cols = (refstr) => {
 };
 
 const ExcelDateToJSDate = (serial) => {
+  if (typeof serial === "string") {
+    return serial.trim();
+  }
   var utc_days = Math.floor(serial - 25569);
   var utc_value = (utc_days + 1) * 86400;
   var date_info = new Date(utc_value * 1000);
@@ -84,6 +87,11 @@ const isValidRow = (row) => {
   );
 };
 
+const toFixedNumber = (num, digits, base) => {
+  var pow = Math.pow(base || 10, digits);
+  return Math.round(num * pow) / pow;
+};
+
 /* 
 <tr class="td-table-alt-row">
     <td class="td-copy-align-left"> <img alt="" src="/waw/ezw/ewstatic/images/8_x_16_spacer.png"> Date 1
@@ -107,13 +115,15 @@ export const generateTableFractionContent = (data) => {
                 <b>Total :</b>
             </th>
             <td
-                class="td-table-total-cell td-table-align-right td-copy-sub">$debit total ${row[2]
-                  .toFixed(2)
-                  .toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                class="td-table-total-cell td-table-align-right td-copy-sub">$${toFixedNumber(
+                  row[2],
+                  2
+                ).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
             <td
-                class="td-table-total-cell td-table-align-right td-copy-sub">$credit total ${row[3]
-                  .toFixed(2)
-                  .toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                class="td-table-total-cell td-table-align-right td-copy-sub">$${toFixedNumber(
+                  row[3],
+                  2
+                ).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
             <td
                 class="td-table-total-cell td-table-align-right td-copy-sub">&nbsp;</td>
         </tr>
@@ -131,23 +141,23 @@ export const generateTableFractionContent = (data) => {
         </td>
         <td class="td-table-align-right">${
           row[2]
-            ? row[2]
-                .toFixed(2)
-                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            ? toFixedNumber(row[2], 2).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })
             : ""
         }</td>
         <td class="td-table-align-right">${
           row[3]
-            ? row[3]
-                .toFixed(2)
-                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            ? toFixedNumber(row[3], 2).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })
             : ""
         }</td>
         <td class="td-table-align-right"> $${
           row[4]
-            ? row[4]
-                .toFixed(2)
-                .toLocaleString("en-US", { minimumFractionDigits: 2 })
+            ? toFixedNumber(row[4], 2).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })
             : ""
         }</td>
     </tr>
